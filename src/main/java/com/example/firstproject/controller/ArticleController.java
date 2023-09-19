@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Slf4j
 @Controller
@@ -31,8 +31,7 @@ public class ArticleController {
         log.info(article.toString());
         // 2. 리파지터리로 엔티티를 DB에 저장
         Article saved = articleRepository.save(article);
-        log.info(saved.toString());
-        return "";
+        return "redirect:/articles/" + saved.getId(); //리다이렉트를 작성할 위치
     }
     @GetMapping("/articles/{id}")
     public String show(@PathVariable Long id, Model model){
@@ -45,11 +44,18 @@ public class ArticleController {
         return "articles/show";
     }
     @GetMapping("/articles")
-    public String index(){
+    public String index(Model model){
         // 1. 모든 데이터 가져오기
-        List<Article> articleEntityList = articleRepository.findAll();
+        ArrayList<Article> articleEntityList = articleRepository.findAll();
         // 2. 모델에 데이터 등록하기
+        model.addAttribute("articleList",articleEntityList);
         // 3. 뷰 페이지 설정하기
-        return "";
+        return "articles/index";
+    }
+    @GetMapping("/articles/{id}/edit")
+    public String edit(@PathVariable Long id){
+        Article articleEntity = articleRepository.findById(id).orElse(null);
+        // 뷰 페이지 설정하기
+        return "articles/edit";
     }
 }
